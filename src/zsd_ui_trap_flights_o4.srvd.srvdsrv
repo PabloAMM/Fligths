@@ -1,0 +1,11 @@
+@EndUserText: {
+  label: 'Service Definition for ZC_TRAP_FLIGHTS'
+}
+@ObjectModel: {
+  leadingEntity: {
+    name: 'ZC_TRAP_FLIGHTS'
+  }
+}
+define service ZSD_UI_TRAP_FLIGHTS_O4 provider contracts odata_v4_ui {
+  expose ZC_TRAP_FLIGHTS;
+}
