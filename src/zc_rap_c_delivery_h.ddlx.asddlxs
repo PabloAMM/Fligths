@@ -1,0 +1,61 @@
+@Metadata.layer: #CUSTOMER
+
+@UI: {
+headerInfo: {
+  typeName:        'Delivery Document Header',
+  typeNamePlural:  'Delivery Documents',
+  title: {
+    type:  #STANDARD,
+    label: 'Delivery Document',
+    value: 'Vbeln'
+  }
+}
+}
+annotate entity ZC_RAP_C_DELIVERY_H with
+{
+  @UI.facet: [
+  {
+    id:       'DeliveryDocHead',
+    purpose:  #STANDARD,
+    type:     #IDENTIFICATION_REFERENCE,
+    label:    'Header',
+    position: 10
+  },
+  {
+    id:            'DeliveryItem',
+    purpose:       #STANDARD,
+    type:          #LINEITEM_REFERENCE,
+    label:         'Items',
+    position:      20,
+    targetElement: '_items'
+  }
+  ]
+  @EndUserText.label: 'Delivery Document'
+  @UI.lineItem: [{  position : 10 ,importance: #HIGH }]
+  @UI.selectionField: [{ position: 10 }]
+  @UI.identification: [{ position:10 }]
+  
+  
+  Vbeln;
+//  DraftIndicator; // o el campo que uses para indicar Draft
+  @EndUserText.label: 'User'
+  @UI.lineItem: [{  position : 20 }]
+  @UI.selectionField: [{ position: 20 }]
+  @UI.identification: [{ position:20 }]
+
+//  @UI.lineItem: [  {    position: 11,    label: 'Estado',    importance: #HIGH  }]
+//  DraftIndicator; // o el campo que uses para indicar Draft
+  
+  Ernam;
+  @EndUserText.label: 'Total'
+  @UI.lineItem: [{  position : 25 }]
+  @UI.selectionField: [{ position: 25 }]
+  @UI.identification: [{ position:25 }]
+  Total;
+  @EndUserText.label: 'Goods Movement Sts'
+  @UI.lineItem: [{  position : 30 }]
+  @UI.selectionField: [{ position: 30 }]
+  @UI.identification: [{ position:30 }]
+  Pgi;
+
+}

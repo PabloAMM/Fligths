@@ -1,0 +1,40 @@
+managed implementation in class zcl_bp_rap_c_delivery unique;
+strict ( 2 );
+with draft;
+define behavior for ZRAP_C_DELIVERY_H alias Header
+persistent table ztrap_delivery_h
+draft table ztrapdelivery_hd
+early numbering
+lock master total
+etag Lastchangedat
+authorization master ( instance )
+
+{
+
+  create;
+  update;
+  delete;
+
+  draft action Edit;
+  draft action Resume;
+  draft action Activate optimized;
+  draft action Discard;
+  draft determine action Prepare;
+
+  field ( readonly ) Vbeln, Total;
+  association _items { create; with draft; }
+
+
+}
+
+define behavior for ZRAP_C_DELIVERY_I alias Items
+persistent table ztrap_delivery_i
+draft table ztrapdelivery_id
+lock dependent by _header
+authorization dependent by _header
+{
+  update;
+  delete;
+  field ( readonly ) Vbeln, Posnr;
+  association _header { with draft; }
+}

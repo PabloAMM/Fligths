@@ -1,0 +1,5 @@
+CLASS zcl_bp_rap_c_delivery DEFINITION PUBLIC ABSTRACT FINAL FOR BEHAVIOR OF zrap_c_delivery_h.
+ENDCLASS.
+
+CLASS zcl_bp_rap_c_delivery IMPLEMENTATION.
+ENDCLASS.
