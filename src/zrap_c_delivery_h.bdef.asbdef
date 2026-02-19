@@ -30,6 +30,7 @@ authorization master ( instance )
 define behavior for ZRAP_C_DELIVERY_I alias Items
 persistent table ztrap_delivery_i
 draft table ztrapdelivery_id
+early numbering
 lock dependent by _header
 authorization dependent by _header
 {
@@ -37,4 +38,6 @@ authorization dependent by _header
   delete;
   field ( readonly ) Vbeln, Posnr;
   association _header { with draft; }
+
+
 }
