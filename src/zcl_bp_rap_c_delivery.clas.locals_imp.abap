@@ -1,3 +1,66 @@
+CLASS lhc_items DEFINITION INHERITING FROM cl_abap_behavior_handler.
+
+  PRIVATE SECTION.
+
+    METHODS rechange_total FOR MODIFY
+      IMPORTING keys FOR ACTION Items~rechange_total.
+
+    METHODS change_total FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR Items~change_total.
+
+ENDCLASS.
+
+CLASS lhc_items IMPLEMENTATION.
+
+  METHOD rechange_total.
+
+    DATA: lv_total TYPE zde_lfimg,
+          lv_unit  TYPE vrkme.
+
+    "...Read entities Header
+    READ ENTITIES OF zrap_c_delivery_h IN LOCAL MODE
+    ENTITY Header
+    ALL FIELDS
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(lt_result_header).
+
+    "...Read entities Items
+    READ ENTITIES OF zrap_c_delivery_h IN LOCAL MODE
+    ENTITY header BY \_items
+    FIELDS ( lfimg )
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(lt_result_items).
+
+    LOOP AT lt_result_items ASSIGNING FIELD-SYMBOL(<lfs_items>).
+      lv_total = lv_total + <lfs_items>-Lfimg.
+      lv_unit  =  <lfs_items>-Vrkme.
+    ENDLOOP.
+
+    "...Update status in header
+    MODIFY ENTITIES OF zrap_c_delivery_h IN LOCAL MODE
+    ENTITY header
+    UPDATE FIELDS ( total Vrkme )
+    WITH VALUE #( FOR ls_header IN lt_result_header
+                    ( %tky  = ls_header-%tky
+                      total = lv_total
+                      vrkme = lv_unit
+                      %control-total = if_abap_behv=>mk-on
+                      %control-vrkme = if_abap_behv=>mk-on ) ) .
+
+
+  ENDMETHOD.
+
+  METHOD change_total.
+
+    MODIFY ENTITIES OF zrap_c_delivery_h IN LOCAL MODE
+    ENTITY items
+    EXECUTE rechange_total
+    FROM CORRESPONDING #( keys ).
+
+  ENDMETHOD.
+
+ENDCLASS.
+
 
 
 CLASS lhc_Header DEFINITION INHERITING FROM cl_abap_behavior_handler.
@@ -5,6 +68,8 @@ CLASS lhc_Header DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     METHODS get_instance_authorizations FOR INSTANCE AUTHORIZATION
       IMPORTING keys REQUEST requested_authorizations FOR Header RESULT result.
+    METHODS change_status FOR DETERMINE ON MODIFY
+      IMPORTING keys FOR header~change_status.
 
     METHODS earlynumbering_cba_items FOR NUMBERING
       IMPORTING entities FOR CREATE header\_items.
@@ -102,7 +167,7 @@ CLASS lhc_Header IMPLEMENTATION.
     ENDLOOP.
 
     "...NOTE: No modify mapped-header because generate dump,
-    "...      this is calculated in method earlynumbering_create
+    "         this is calculated in method earlynumbering_create
 
   ENDMETHOD.
 
@@ -122,6 +187,35 @@ CLASS lhc_Header IMPLEMENTATION.
        FROM ztrapdelivery_id
        WHERE vbeln = @iv_vbeln
        INTO @rv_posnr.
+
+  ENDMETHOD.
+
+  METHOD change_status.
+
+    DATA: lt_header TYPE TABLE FOR UPDATE zrap_c_delivery_h.
+
+    "....Read entities header
+    READ ENTITIES OF zrap_c_delivery_h IN LOCAL MODE
+    ENTITY header
+    FIELDS ( Ernam )
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(lt_result).
+
+    LOOP AT lt_result ASSIGNING FIELD-SYMBOL(<lfs_result>).
+      <lfs_result>-Pgi = COND #( WHEN <lfs_result>-Ernam = 'SSINGH' THEN 'C' ELSE 'A' ).
+    ENDLOOP.
+
+    lt_header = CORRESPONDING #( lt_result ).
+
+    LOOP AT lt_header ASSIGNING FIELD-SYMBOL(<lfs_header>).
+      <lfs_header>-%control-Pgi = if_abap_behv=>mk-on.
+    ENDLOOP.
+
+    "...Modify Status
+    MODIFY ENTITIES OF zrap_c_delivery_h IN LOCAL MODE
+    ENTITY header
+    UPDATE FIELDS ( Pgi )
+    WITH lt_header.
 
   ENDMETHOD.
 
