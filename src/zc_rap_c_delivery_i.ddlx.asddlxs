@@ -1,13 +1,12 @@
 @Metadata.layer: #CORE
-annotate entity ZC_RAP_C_DELIVERY_I
-    with 
+annotate entity ZC_RAP_C_DELIVERY_I with
 {
-    @UI.facet: [ {
-    id:       'DeliveryItem',
-    purpose:  #STANDARD,
-    type:     #IDENTIFICATION_REFERENCE,
-    label:    'Items',
-    position: 10
+  @UI.facet: [ {
+  id:       'DeliveryItem',
+  purpose:  #STANDARD,
+  type:     #IDENTIFICATION_REFERENCE,
+  label:    'Items',
+  position: 10
   }]
   @EndUserText.label: 'Delivery Document'
   @UI.lineItem: [{  position : 10 }]
@@ -29,5 +28,7 @@ annotate entity ZC_RAP_C_DELIVERY_I
   @UI.selectionField: [{ position: 40 }]
   @UI.identification: [{ position:40 }]
   Lfimg;
-    
+  @Consumption.valueHelpDefinition: [{ entity: { name: 'I_UnitOfMeasureStdVH', element: 'UnitOfMeasure' } }]
+  Vrkme;
+
 }

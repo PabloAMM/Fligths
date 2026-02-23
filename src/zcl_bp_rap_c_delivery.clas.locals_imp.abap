@@ -36,7 +36,7 @@ CLASS lhc_items IMPLEMENTATION.
       lv_unit  =  <lfs_items>-Vrkme.
     ENDLOOP.
 
-    "...Update status in header
+    "...Update total in header
     MODIFY ENTITIES OF zrap_c_delivery_h IN LOCAL MODE
     ENTITY header
     UPDATE FIELDS ( total Vrkme )
@@ -52,10 +52,51 @@ CLASS lhc_items IMPLEMENTATION.
 
   METHOD change_total.
 
+
+    READ ENTITIES OF zrap_c_delivery_h IN LOCAL MODE
+    ENTITY header BY \_items
+    FIELDS ( lfimg )
+    WITH CORRESPONDING #( keys )
+    RESULT DATA(lt_result_items).
+
+    DATA(lt_keys_aux) = keys.
+
+    "... When deleted the last item
+    IF lt_result_items IS INITIAL.
+
+      "...Read entities Header
+      READ ENTITIES OF zrap_c_delivery_h IN LOCAL MODE
+      ENTITY Header
+      ALL FIELDS
+      WITH CORRESPONDING #( keys )
+      RESULT DATA(lt_result_header).
+
+      "...Update total in header
+      MODIFY ENTITIES OF zrap_c_delivery_h IN LOCAL MODE
+      ENTITY header
+      UPDATE FIELDS ( total Vrkme )
+      WITH VALUE #( FOR ls_header IN lt_result_header
+                      ( %tky  = ls_header-%tky
+                        total = 0
+                        vrkme = ''
+                        %control-total = if_abap_behv=>mk-on
+                        %control-vrkme = if_abap_behv=>mk-on ) ) .
+      RETURN.
+
+    ENDIF.
+    "....When Delete items
+    IF NOT line_exists( lt_result_items[ Vbeln = keys[ 1 ]-Vbeln Posnr = keys[ 1 ]-Posnr ] ).
+      lt_keys_aux[ 1 ]-posnr = lt_result_items[ 1 ]-Posnr.
+    ENDIF.
+
+
+
     MODIFY ENTITIES OF zrap_c_delivery_h IN LOCAL MODE
     ENTITY items
     EXECUTE rechange_total
-    FROM CORRESPONDING #( keys ).
+    FROM CORRESPONDING #( lt_keys_aux )
+    REPORTED DATA(lt_reported)
+    FAILED DATA(lt_failed).
 
   ENDMETHOD.
 

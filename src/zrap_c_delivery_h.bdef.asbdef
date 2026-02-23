@@ -41,7 +41,7 @@ authorization dependent by _header
   delete;
   field ( readonly ) Vbeln, Posnr;
   association _header { with draft; }
-  determination change_total on modify { field lfimg; }
+  determination change_total on modify { field lfimg; delete; }
   side effects { field Lfimg affects field _header.Total, field _header.Vrkme; } internal action rechange_total;
 
 }

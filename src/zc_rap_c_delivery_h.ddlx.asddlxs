@@ -37,14 +37,13 @@ annotate entity ZC_RAP_C_DELIVERY_H with
   
   
   Vbeln;
-//  DraftIndicator; // o el campo que uses para indicar Draft
+
   @EndUserText.label: 'User'
   @UI.lineItem: [{  position : 20 }]
   @UI.selectionField: [{ position: 20 }]
   @UI.identification: [{ position:20 }]
 
-//  @UI.lineItem: [  {    position: 11,    label: 'Estado',    importance: #HIGH  }]
-//  DraftIndicator; // o el campo que uses para indicar Draft
+
   
   Ernam;
   @EndUserText.label: 'Total'
